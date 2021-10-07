@@ -1,8 +1,8 @@
 package com.eelok.contactroom;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -10,11 +10,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.eelok.contactroom.data.ContactRepository;
 import com.eelok.contactroom.model.Contact;
 import com.eelok.contactroom.model.ContactViewModel;
 
 public class NewContact extends AppCompatActivity {
+
+    public static final String NAME_REPLY = "name_reply";
+    public static final String OCCUPATION_REPLY = "occupation_reply";
 
 
     private EditText enterName;
@@ -53,17 +55,22 @@ public class NewContact extends AppCompatActivity {
 //        });
 
         saveInfoButton.setOnClickListener(view -> {
+            Intent replyIntent = new Intent();
 
             if (!TextUtils.isEmpty(enterName.getText()) && !TextUtils.isEmpty(enterOccupation.getText())) {
-                Contact contact = new Contact(
-                        enterName.getText().toString(),
-                        enterOccupation.getText().toString()
-                );
-                ContactViewModel.insert(contact);
-            } else {
-                Toast.makeText(this, "enter information", Toast.LENGTH_SHORT).show();
-            }
+                String name = enterName.getText().toString();
+                String occupation = enterOccupation.getText().toString();
 
+                replyIntent.putExtra(NAME_REPLY, name);
+                replyIntent.putExtra(OCCUPATION_REPLY, occupation);
+                setResult(RESULT_OK, replyIntent);
+
+//                Contact contact = new Contact(name, occupation);
+//                ContactViewModel.insert(contact);
+            } else {
+                setResult(RESULT_CANCELED, replyIntent);
+            }
+            finish();
         });
 
     }
