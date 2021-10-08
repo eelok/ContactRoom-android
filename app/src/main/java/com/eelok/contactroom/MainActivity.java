@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == NEW_CONTACT_ACTIVITY_REQUEST_CODE && requestCode == RESULT_OK){
+        if(requestCode == NEW_CONTACT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
 
             String name = data.getStringExtra(NewContact.NAME_REPLY);
             String occupation = data.getStringExtra(NewContact.OCCUPATION_REPLY);
