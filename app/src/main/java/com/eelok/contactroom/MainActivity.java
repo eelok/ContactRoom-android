@@ -1,15 +1,14 @@
 package com.eelok.contactroom;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.eelok.contactroom.model.Contact;
 import com.eelok.contactroom.model.ContactViewModel;
@@ -20,15 +19,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ContactViewModel contactViewModel;
-    private TextView textView;
     private static final int NEW_CONTACT_ACTIVITY_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        textView = findViewById(R.id.text);
 
         contactViewModel = new ViewModelProvider
                 .AndroidViewModelFactory(MainActivity.this.getApplication())
@@ -43,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
                     stringBuilder.append(" - ").append(contact.getName()).append(" ").append(contact.getOccupation());
                     Log.d("TAG", "onCreate " + contact.getName());
                 }
-                textView.setText(stringBuilder.toString());
             }
         });
 
