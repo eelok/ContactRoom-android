@@ -9,7 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.eelok.contactroom.adapter.RecyclerViewAdapter;
 import com.eelok.contactroom.model.Contact;
 import com.eelok.contactroom.model.ContactViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ContactViewModel contactViewModel;
     private static final int NEW_CONTACT_ACTIVITY_REQUEST_CODE = 1;
+    private RecyclerView recyclerView;
+    private RecyclerViewAdapter recyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,15 +35,15 @@ public class MainActivity extends AppCompatActivity {
                 .AndroidViewModelFactory(MainActivity.this.getApplication())
                 .create(ContactViewModel.class);
 
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
         contactViewModel.getAllContacts().observe(MainActivity.this, new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (Contact contact : contacts) {
-                    stringBuilder.append(" - ").append(contact.getName()).append(" ").append(contact.getOccupation());
-                    Log.d("TAG", "onCreate " + contact.getName());
-                }
+                recyclerViewAdapter = new RecyclerViewAdapter(contacts, MainActivity.this);
+                recyclerView.setAdapter(recyclerViewAdapter);
             }
         });
 
