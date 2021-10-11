@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.eelok.contactroom.model.Contact;
@@ -72,6 +73,20 @@ public class NewContact extends AppCompatActivity {
             }
             finish();
         });
+
+        Bundle data = getIntent().getExtras();
+
+        if(data != null){
+            int id = data.getInt(MainActivity.CONTACT_ID);
+            contactViewModel.getContact(id).observe(this, new Observer<Contact>() {
+                @Override
+                public void onChanged(Contact contact) {
+                    enterName.setText(contact.getName());
+                    enterOccupation.setText(contact.getOccupation());
+                }
+            });
+
+        }
 
     }
 }
