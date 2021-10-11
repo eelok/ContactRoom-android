@@ -18,9 +18,11 @@ import com.eelok.contactroom.model.ContactViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnContactClickListener {
 
+    private static final String TAG = "Clicked";
     private ContactViewModel contactViewModel;
     private static final int NEW_CONTACT_ACTIVITY_REQUEST_CODE = 1;
     private RecyclerView recyclerView;
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         contactViewModel.getAllContacts().observe(MainActivity.this, new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
-                recyclerViewAdapter = new RecyclerViewAdapter(contacts, MainActivity.this);
+                recyclerViewAdapter = new RecyclerViewAdapter(contacts, MainActivity.this, MainActivity.this);
                 recyclerView.setAdapter(recyclerViewAdapter);
             }
         });
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == NEW_CONTACT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
+        if (requestCode == NEW_CONTACT_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
 
             String name = data.getStringExtra(NewContact.NAME_REPLY);
             String occupation = data.getStringExtra(NewContact.OCCUPATION_REPLY);
@@ -76,5 +78,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d("TAGs", "onActivityResult: " + data.getStringArrayExtra(NewContact.NAME_REPLY));
             Log.d("TAGs", "onActivityResult: " + data.getStringArrayExtra(NewContact.OCCUPATION_REPLY));
         }
+    }
+
+    @Override
+    public void onContactClick(int position) {
+        Contact contact = Objects.requireNonNull(contactViewModel.allContacts.getValue()).get(position);
+        Log.d(TAG, "onContactClick: " + contact.getName());
+
     }
 }
