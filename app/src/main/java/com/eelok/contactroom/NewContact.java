@@ -3,6 +3,7 @@ package com.eelok.contactroom;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -88,20 +89,42 @@ public class NewContact extends AppCompatActivity {
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int id = contact_id;
-                String name = enterName.getText().toString().toString().trim();
+                String name = enterName.getText().toString().trim();
                 String occupation = enterOccupation.getText().toString().trim();
 
-                if(TextUtils.isEmpty(name) || TextUtils.isEmpty(occupation)){
+                if (TextUtils.isEmpty(name) || TextUtils.isEmpty(occupation)) {
                     Snackbar.make(enterName, R.string.empty, Snackbar.LENGTH_SHORT).show();
                 } else {
                     Contact contact = new Contact();
-                    contact.setId(id);
+                    contact.setId(contact_id);
                     contact.setName(name);
                     contact.setOccupation(occupation);
                     ContactViewModel.updateContact(contact);
                     finish();
                 }
+            }
+        });
+
+        if(isEdit){
+            saveInfoButton.setVisibility(View.GONE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+            updateButton.setVisibility(View.GONE);
+        }
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("DELETE", "delete btn was clicked");
+                String name = enterName.getText().toString().trim();
+                String occupation = enterOccupation.getText().toString().trim();
+
+                Contact contact = new Contact();
+                contact.setId(contact_id);
+                contact.setName(name);
+                contact.setOccupation(occupation);
+                ContactViewModel.deleteContact(contact);
+                finish();
             }
         });
 
