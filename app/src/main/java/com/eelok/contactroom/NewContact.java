@@ -3,6 +3,7 @@ package com.eelok.contactroom;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,16 +14,22 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.eelok.contactroom.model.Contact;
 import com.eelok.contactroom.model.ContactViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 public class NewContact extends AppCompatActivity {
 
     public static final String NAME_REPLY = "name_reply";
     public static final String OCCUPATION_REPLY = "occupation_reply";
 
+    private int contact_id = 0;
+    private Boolean isEdit = false;
 
     private EditText enterName;
     private EditText enterOccupation;
     private Button saveInfoButton;
+
+    private Button updateButton;
+    private Button deleteButton;
 
     private ContactViewModel contactViewModel;
 
@@ -36,24 +43,29 @@ public class NewContact extends AppCompatActivity {
         enterOccupation = findViewById(R.id.enter_occupation);
         saveInfoButton = findViewById(R.id.save_button);
 
+        updateButton = findViewById(R.id.update_button);
+        deleteButton = findViewById(R.id.delete_button);
+
         contactViewModel = new ViewModelProvider
                 .AndroidViewModelFactory(NewContact.this.getApplication())
                 .create(ContactViewModel.class);
 
-        ///todo
-//        saveInfoButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!TextUtils.isEmpty(enterName.getText()) && !TextUtils.isEmpty(enterOccupation.getText())) {
-//                    Contact contact = new Contact(
-//                            enterName.getText().toString(),
-//                            enterOccupation.getText().toString()
-//                    );
-//                } else {
-//                    Toast.makeText(this, "enter information", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
+
+        if (getIntent().hasExtra(MainActivity.CONTACT_ID)) {
+            contact_id = getIntent().getIntExtra(MainActivity.CONTACT_ID, 0);
+
+            contactViewModel.getContact(contact_id).observe(this, new Observer<Contact>() {
+                @Override
+                public void onChanged(Contact contact) {
+                    if (contact != null) {
+                        enterName.setText(contact.getName());
+                        enterOccupation.setText(contact.getOccupation());
+                    }
+                }
+            });
+
+            isEdit = true;
+        }
 
         saveInfoButton.setOnClickListener(view -> {
             Intent replyIntent = new Intent();
@@ -66,27 +78,32 @@ public class NewContact extends AppCompatActivity {
                 replyIntent.putExtra(OCCUPATION_REPLY, occupation);
                 setResult(RESULT_OK, replyIntent);
 
-//                Contact contact = new Contact(name, occupation);
-//                ContactViewModel.insert(contact);
             } else {
                 setResult(RESULT_CANCELED, replyIntent);
             }
             finish();
         });
 
-        Bundle data = getIntent().getExtras();
 
-        if(data != null){
-            int id = data.getInt(MainActivity.CONTACT_ID);
-            contactViewModel.getContact(id).observe(this, new Observer<Contact>() {
-                @Override
-                public void onChanged(Contact contact) {
-                    enterName.setText(contact.getName());
-                    enterOccupation.setText(contact.getOccupation());
+        updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int id = contact_id;
+                String name = enterName.getText().toString().toString().trim();
+                String occupation = enterOccupation.getText().toString().trim();
+
+                if(TextUtils.isEmpty(name) || TextUtils.isEmpty(occupation)){
+                    Snackbar.make(enterName, R.string.empty, Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Contact contact = new Contact();
+                    contact.setId(id);
+                    contact.setName(name);
+                    contact.setOccupation(occupation);
+                    ContactViewModel.updateContact(contact);
+                    finish();
                 }
-            });
-
-        }
+            }
+        });
 
     }
 }
